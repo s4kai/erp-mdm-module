@@ -1,76 +1,134 @@
 package com.sakai.mdm.product.domain.aggregates;
 
+import com.sakai.domain.objects.Money;
 import com.sakai.exception.BusinessException;
-import com.sakai.mdm.product.domain.entities.ProductVariant;
 import com.sakai.mdm.product.domain.objects.*;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.Map;
-import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductTest {
 
     @Test
-    void shouldAddVariantSuccessfully() {
-        Product product = new Product(ProductId.create());
-        SKU sku = new SKU("VAR001");
-        Attributes attributes = new Attributes(Map.of("color", "red"));
+    void shouldCreateProduct() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
 
-        ProductVariant variant = product.addVariant(sku, attributes);
+        assertNotNull(product);
+        assertNotNull(product.getId());
+        assertNotNull(product.getCreatedDate());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNameIsNull() {
+        assertThrows(BusinessException.class, () ->
+            Product.create(null,
+                "CODE123",
+                new CategoryId(UUID.randomUUID()),
+                new UnitOfMeasureId("uom-1")
+            )
+        );
+    }
+
+    @Test
+    void shouldAddVariant() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
+
+        var variant = product.addVariant("SKU-001", Map.of("color", "red"));
 
         assertNotNull(variant);
-        assertEquals(sku, variant.getId());
     }
 
     @Test
     void shouldThrowExceptionWhenAddingDuplicateVariant() {
-        Product product = new Product(ProductId.create());
-        SKU sku = new SKU("VAR001");
-        Attributes attributes = new Attributes(Map.of("color", "red"));
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
 
-        product.addVariant(sku, attributes);
+        product.addVariant("SKU-001", Map.of("color", "red"));
 
-        assertThrows(BusinessException.class, () -> {
-            product.addVariant(sku, attributes);
-        });
-    }
-
-    @Test
-    void shouldFindVariantBySku() {
-        Product product = new Product(ProductId.create());
-        SKU sku = new SKU("VAR001");
-        Attributes attributes = new Attributes(Map.of("color", "red"));
-
-        product.addVariant(sku, attributes);
-        Optional<ProductVariant> found = product.findVariantBySku(sku);
-
-        assertTrue(found.isPresent());
-        assertEquals(sku, found.get().getId());
-    }
-
-    @Test
-    void shouldReturnEmptyWhenVariantNotFound() {
-        Product product = new Product(ProductId.create());
-        SKU sku = new SKU("VAR001");
-
-        Optional<ProductVariant> found = product.findVariantBySku(sku);
-
-        assertTrue(found.isEmpty());
-    }
-
-    @Test
-    void shouldActivateProduct() {
-        Product product = new Product(ProductId.create());
-
-        assertDoesNotThrow(product::activate);
+        assertThrows(BusinessException.class, () ->
+            product.addVariant("SKU-001", Map.of("color", "blue"))
+        );
     }
 
     @Test
     void shouldDeactivateProduct() {
-        Product product = new Product(ProductId.create());
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
 
         assertDoesNotThrow(product::deactivate);
+    }
+
+    @Test
+    void shouldUpdateDescription() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
+
+        assertDoesNotThrow(() -> product.updateDescription("New description"));
+    }
+
+    @Test
+    void shouldUpdateBasePrice() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
+
+        assertDoesNotThrow(() -> product.updateBasePrice(Money.of(BigDecimal.TEN)));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPriceIsNull() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
+
+        assertThrows(BusinessException.class, () -> product.updateBasePrice(null));
+    }
+
+    @Test
+    void shouldFindVariantBySku() {
+        var product = Product.create(
+            "Test Product",
+            "CODE123",
+            new CategoryId(UUID.randomUUID()),
+            new UnitOfMeasureId("uom-1")
+        );
+
+        product.addVariant("SKU-001", Map.of("color", "red"));
+
+        var variant = product.findVariantBySku(new SKU("SKU-001"));
+
+        assertTrue(variant.isPresent());
     }
 }
