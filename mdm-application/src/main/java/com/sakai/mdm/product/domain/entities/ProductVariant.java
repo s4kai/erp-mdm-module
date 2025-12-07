@@ -15,8 +15,14 @@ public class ProductVariant extends BaseEntity<SKU> {
     private UnitOfMeasureId uom;
     private Gtin gtin;
 
-    public ProductVariant(SKU sku, ProductId productId, Attributes attributes) {
+    private ProductVariant(SKU sku, ProductId productId, Attributes attributes) {
         super(sku);
+        this.productId = productId;
+        this.attributes = attributes;
+    }
+
+    public static ProductVariant create(ProductId productId, SKU sku, Attributes attributes) {
+        return new ProductVariant(sku, productId, attributes);
     }
 
     public Money resolvePrice(Money basePrice) {
@@ -31,7 +37,12 @@ public class ProductVariant extends BaseEntity<SKU> {
         return uom != null ? uom : baseUom;
     }
 
-    public void desactivate() {
+
+    public boolean hasSku(SKU sku) {
+        return this.id.equals(sku);
+    }
+
+    public void deactivate() {
         productStatus = ProductStatus.INACTIVE;
     }
 
