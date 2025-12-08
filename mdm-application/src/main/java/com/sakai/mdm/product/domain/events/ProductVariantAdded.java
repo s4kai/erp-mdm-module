@@ -12,7 +12,7 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = true)
 public class ProductVariantAdded extends DomainEvent {
     private final Instant occurredAt = Instant.now();
-    private final String eventType = "PRODUCT_CREATED";
+    private final String eventType = "VARIANT_CREATED";
     private final ProductId productId;
     private final SKU sku;
 
