@@ -2,7 +2,7 @@ package com.sakai.mdm.product.application.commands.handler;
 
 import com.sakai.domain.events.DomainEventPublisher;
 import com.sakai.domain.objects.Money;
-import com.sakai.mdm.product.application.commands.dto.CreateProductCommand;
+import com.sakai.mdm.product.application.commands.CreateProductCommand;
 import com.sakai.mdm.product.domain.aggregates.Product;
 import com.sakai.mdm.product.domain.objects.*;
 import com.sakai.mdm.product.domain.repositories.ProductRepository;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class CreateProductHandler {
     private final ProductRepository productRepository;
     private final DomainEventPublisher domainEventPublisher;
-
 
     public void handle(CreateProductCommand command) {
         var categoryId = new CategoryId(command.categoryId());

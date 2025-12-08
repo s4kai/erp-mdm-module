@@ -1,4 +1,9 @@
-package com.sakai.mdm.product.application.commands.dto;
+package com.sakai.mdm.product.application.commands;
+
+import com.sakai.mdm.product.application.commands.dtos.DimensionsData;
+import com.sakai.mdm.product.application.commands.dtos.MoneyData;
+import com.sakai.mdm.product.application.commands.dtos.UomData;
+import com.sakai.mdm.product.application.commands.dtos.VariantData;
 
 import java.util.List;
 import java.util.Map;
@@ -15,33 +20,6 @@ public record CreateProductCommand(
         List<VariantData> variants
 ) {
 
-    public record UomData(String value) {
-    }
-
-    public record DimensionsData(
-            String height,
-            String width,
-            String depth,
-            String weight
-    ) {
-    }
-
-    public record MoneyData(
-            String amount,
-            String currency
-    ) {
-    }
-
-    public record VariantData(
-            String sku,
-            Map<String, String> attributes,
-            String name,
-            String gtin,
-            MoneyData price,
-            DimensionsData dimensions,
-            UomData uom
-    ) {
-    }
 
     public boolean hasDescription() {
         return description != null && !description.isBlank();
